@@ -1,0 +1,37 @@
+{
+  "name": "brick-router",
+  "version": "1.0.0",
+  "description": "Modular router for serving static assets",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard && NODE_ENV=test node test",
+    "test-cov": "standard && NODE_ENV=test istanbul cover test.js"
+  },
+  "repository": "yoshuawuyts/brick-router",
+  "keywords": [
+    "router",
+    "build process",
+    "modular",
+    "static",
+    "browserify",
+    "myth"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "mkdirp": "^0.5.0",
+    "noop2": "^1.0.1",
+    "run-parallel": "^1.1.0"
+  },
+  "devDependencies": {
+    "istanbul": "^0.3.13",
+    "proxyquire": "^1.4.0",
+    "rimraf": "^2.3.2",
+    "standard": "^3.6.1",
+    "tape": "^4.0.0"
+  },
+  "files": [
+    "LICENSE",
+    "index.js",
+    "README.md"
+  ]
+}
