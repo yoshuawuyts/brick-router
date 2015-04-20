@@ -22,7 +22,7 @@ const router = brick()
 
 module.exports = router
 
-router.on('/', (cb) => cb(null, '/'))
+router.on('/', cb => cb(null, '/'))
 router.on('/index.html', cb => cb(null, 'html'))
 router.on('/index.css', cb => cb(null, 'css'))
 
