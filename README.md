@@ -34,7 +34,8 @@ router.match('/index.html', function (err, data) {
   // => html
 })
 
-// execute all routes and write output to files
+// execute all routes and 
+// write output to directory tree
 router.build(__dirname + '/build')
 ```
 
