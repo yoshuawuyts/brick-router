@@ -15,7 +15,7 @@ $ npm install brick-router
 ## Usage
 ```js
 const post = require('@myApp/createPost')
-const brick = require('brick-router)
+const brick = require('brick-router')
 const posts = require('./posts.json')
 
 const router = brick()
