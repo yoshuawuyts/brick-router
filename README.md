@@ -14,7 +14,7 @@ $ npm install brick-router
 
 ## Usage
 ```js
-const post = require('@myApp/createPost')
+const createPost = require('@myApp/createPost')
 const brick = require('brick-router')
 const posts = require('./posts.json')
 
@@ -27,7 +27,7 @@ router.on('/index.html', cb => cb(null, 'html'))
 router.on('/index.css', cb => cb(null, 'css'))
 
 // register all blogposts
-posts.forEach(post => router.on(post, posts(post, cb)))
+posts.forEach(post => router.on(post, createPost(post)))
 
 router.match('/index.html', function (err, data) {
   console.log(data)
