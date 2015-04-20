@@ -49,7 +49,7 @@ test('.build() should write file results to disk', function (t) {
   t.plan(5)
   const router = brick()
   router.on('/foo.txt', function (cb) {
-    cb('my amazing data')
+    cb(null, 'my amazing data')
   })
 
   router.build(__dirname + '/derp', function (err, res) {
