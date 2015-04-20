@@ -33,6 +33,9 @@ router.match('/index.html', function (err, data) {
   console.log(data)
   // => html
 })
+
+// execute all routes and write output to files
+router.build(__dirname + '/build')
 ```
 
 ## Why?
