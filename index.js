@@ -1,4 +1,5 @@
 const parallel = require('run-parallel')
+const error = require('http-errors')
 const assert = require('assert')
 const mkdirp = require('mkdirp')
 const noop = require('noop2')
@@ -31,7 +32,8 @@ brick.match = function (path, cb) {
   assert.equal(typeof path, 'string', 'path should be a string')
   cb = cb || noop
   const route = this.router[path]
-  if (route) route(cb)
+  if (!route) return cb(error(404))
+  route(cb)
 }
 
 // execute all paths and write
@@ -47,19 +49,21 @@ brick.build = function (dir, cb) {
       const split = route.split('/')
       split.pop()
       const loc = split.join('/')
-      ctx.router[route](function (data) {
+      ctx.router[route](routeCb)
+
+      function routeCb (data) {
+        assert.ok(data, 'no data retrieved')
         mkdirp(path.join(dir, loc), function (err) {
-          assert.ifError(err)
+          if (err) cb(err)
         })
 
         const ws = fs.createWriteStream(path.join(dir, route))
-        ws.once('close', innerCb)
         ws.once('open', function () {
-          console.log('data', data)
           this.write(data)
           this.end()
         })
-      })
+        ws.once('close', innerCb)
+      }
     }
   })
 
