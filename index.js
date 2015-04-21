@@ -54,8 +54,8 @@ brick.build = function (dir, cb) {
       // resolution callback that is passed to router fns
       // any, str -> null
       function routeCb (err, data) {
-        if (!data) return cb('no data retrieved')
         if (err) return cb(err)
+        if (!data) return cb('no data retrieved')
 
         mkdirp(path.join(dir, loc), function (err) {
           if (err) cb(err)
