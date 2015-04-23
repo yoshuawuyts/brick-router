@@ -22,11 +22,13 @@ const router = brick()
 
 module.exports = router
 
+// register routes
 router.on('/', cb => cb(null, '/'))
 router.on('/index.html', cb => cb(null, 'html'))
 router.on('/index.css', cb => cb(null, 'css'))
 
-// register all blogposts
+// loop over an array of routes
+// and register them statically
 posts.forEach(post => router.on(post, createPost(post)))
 
 router.match('/index.html', function (err, data) {
@@ -57,14 +59,15 @@ between non-method routers.
 ### router = brick()
 Create a new router.
 
-### router.on('myPath', cb => cb())
-Register a new path in the router.
+### router.on(filename, cb => cb(err, data|stream))
+Register a new path in the router. The callback either accepts data or a
+ReadableStream.
 
-### router.match('somePath', () => {})
+### router.match(filename, (err, res) => {})
 Match a path on the router, pass in an optional callback to the router which
 can later be called.
 
-### router.build('/output/dir', () => {})
+### router.build(directory, (err, res) => {})
 Execute all routes and write the output to a directory tree so it can be served
 statically. Calls an optional callback on completion.
 
