@@ -1,4 +1,5 @@
 const rimraf = require('rimraf')
+const from = require('from2')
 const test = require('tape')
 const fs = require('fs')
 
@@ -64,3 +65,33 @@ test('.build() should write file results to disk', function (t) {
     })
   })
 })
+
+test('.build() should handle streams in callback responses', function (t) {
+  t.plan(5)
+  const router = brick()
+  router.on('/foo.txt', function (cb) {
+    const stream = fromString('my amazing data')
+    cb(null, stream)
+  })
+
+  router.build(__dirname + '/derp', function (err, res) {
+    t.ifError(err)
+    fs.readFile(__dirname + '/derp/foo.txt', 'utf8', function (err, res) {
+      t.ifError(err)
+      t.equal(res, 'my amazing data')
+      rimraf(__dirname + '/derp', function (err) {
+        t.ifError(err)
+        t.pass('rm files')
+      })
+    })
+  })
+})
+
+function fromString (string) {
+  return from(function (size, next) {
+    if (string.length <= 0) return next()
+    var chunk = string.slice(0, size)
+    string = string.slice(size)
+    next(null, chunk)
+  })
+}

@@ -1,4 +1,5 @@
 const parallel = require('run-parallel')
+const isStream = require('is-stream')
 const error = require('http-errors')
 const assert = require('assert')
 const mkdirp = require('mkdirp')
@@ -46,27 +47,32 @@ brick.build = function (dir, cb) {
 
   const fns = Object.keys(this.router).map(function (route) {
     return function (innerCb) {
+      const out = path.join(dir, route)
       const split = route.split('/')
       split.pop()
       const loc = split.join('/')
-      ctx.router[route](routeCb)
+      ctx.router[route](handler)
 
       // resolution callback that is passed to router fns
       // any, str -> null
-      function routeCb (err, data) {
+      function handler (err, next) {
         if (err) return cb(err)
-        if (!data) return cb('no data retrieved')
+        if (!next) return cb('no data retrieved')
 
         mkdirp(path.join(dir, loc), function (err) {
           if (err) cb(err)
         })
 
-        const ws = fs.createWriteStream(path.join(dir, route))
-        ws.once('open', function () {
-          this.write(data)
-          this.end()
+        if (isStream(next)) {
+          const ws = fs.createWriteStream(out)
+          ws.once('close', innerCb)
+          return next.pipe(ws)
+        }
+
+        fs.writeFile(out, next, function (err, cb) {
+          if (err) return innerCb(err)
+          innerCb()
         })
-        ws.once('close', innerCb)
       }
     }
   })
