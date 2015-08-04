@@ -5,7 +5,7 @@
 [![Downloads][downloads-image]][downloads-url]
 [![js-standard-style][standard-image]][standard-url]
 
-Modular router for serving static assets.
+Static asset server that can write to files.
 
 ## Installation
 ```bash
@@ -14,73 +14,57 @@ $ npm install brick-router
 
 ## Usage
 ```js
-const createPost = require('@myApp/createPost')
 const brick = require('brick-router')
-const posts = require('./posts.json')
+const fs = require('fs')
 
 const router = brick()
 
-module.exports = router
-
-// register routes
-router.on('/', cb => cb(null, '/'))
-router.on('/index.html', cb => cb(null, 'html'))
-router.on('/index.css', cb => cb(null, 'css'))
-
-// loop over an array of routes
-// and register them statically
-posts.forEach(post => router.on(post, createPost(post)))
-
-router.match('/index.html', function (err, data) {
-  console.log(data)
-  // => html
+router.on('/index.html', cb => {
+  const rs = fs.createReadStream('index.html')
+  cb(null, rs)
 })
 
-// execute all routes and 
-// write output to directory tree
-router.build(__dirname + '/build')
+// use as router
+router.match('/index.html', (err, res) => {
+  if (err) throw err
+  console.log(res)
+})
+
+// write to file
+router.build(__dirname + '/my-dirname')
 ```
 
 ## Why?
-There should be no disparity in file serving during development and production.
-Current tools either require ecosystem buy-in (grunt, gulp) or focus on a 
-specific part of the process (wzrd for development, metalsmith for production).
+In development an application usually goes through 3 stages:
+- __experiment__ - some html, css, js to toy around locally
+- __static__ - static files, usually hosted on GitHub pages
+- __server__ - application with a working backend
 
-`brick-router` can execute arbitrary code for each page during development 
-(e.g. watch files and rebuild on changes). When moving to production call
-`router.build('/mydir')` to execute all routes and write the output to a
-directory tree so it can be served statically. 
-
-`'tools.production' === 'tools.development'`
+When switching stages it's common to throw out your build process, and start
+from scratch. `brick-router` allows you to keep the same build process by
+serving files both in-memory (for experimentation and servers) and being able
+to write to the filesystem (for static pages).
 
 ## API
-The api is heavily copied from [wayfarer](https://github.com/yoshuawuyts/wayfarer) to maintain a sense of familiarity
-between non-method routers.
 ### router = brick()
 Create a new router.
 
-### router.on(filename, cb => cb(err, data|stream))
+### router.on(filename, cb(err, data|stream))
 Register a new path in the router. The callback either accepts data or a
 ReadableStream.
 
-### router.match(filename, (err, res) => {})
+### router.match(filename, cb(err, res))
 Match a path on the router, pass in an optional callback to the router which
 can later be called.
 
-### router.build(directory, (err, res) => {})
+### router.build(directory, cb(err, res))
 Execute all routes and write the output to a directory tree so it can be served
 statically. Calls an optional callback on completion.
 
-## Note on livereload
-This has not been tested yet, but reloads could be called through event
-listeners or similar. The livereload server can just live in a separate
-function.
-
 ## See Also
-- [wayfarer](https://github.com/yoshuawuyts/wayfarer) - client-side router
-- [watchify](https://github.com/substack/watchify) - watch mode for browserify builds
-- [chokidar](https://github.com/paulmillr/chokidar) - A neat wrapper around node.js fs.watch / fs.watchFile
-- [wzrd](https://github.com/maxogden/wzrd) - Super minimal browserify development server
+- [wayfarer](https://github.com/yoshuawuyts/wayfarer) - composable trie based router
+- [chokidar](https://github.com/paulmillr/chokidar) - wrapper around node.js fs.watch / fs.watchFile
+- [brick-server](https://github.com/yoshuawuyts/brick-server) - HTTP frontend
 
 ## License
 [MIT](https://tldrlegal.com/license/mit-license)
