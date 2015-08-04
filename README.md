@@ -27,7 +27,7 @@ router.on('/index.html', cb => {
 // use as router
 router.match('/index.html', (err, res) => {
   if (err) throw err
-  console.log(res)
+  res.pipe(process.stdout)
 })
 
 // write to file
