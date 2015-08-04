@@ -1,6 +1,6 @@
 {
   "name": "brick-router",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Modular router for serving static assets",
   "main": "index.js",
   "scripts": {
